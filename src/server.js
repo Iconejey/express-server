@@ -12,8 +12,8 @@ route(app);
 
 // Options
 const options = {
-	key: fs.readFileSync('./cert/_.nicolasgwy.dev_private_key.key'),
-	cert: fs.readFileSync('./cert/nicolasgwy.dev_ssl_certificate.cer')
+	key: fs.readFileSync('./cert/private_key.key'),
+	cert: fs.readFileSync('./cert/ssl_certificate.cer')
 };
 
 // HTTP
