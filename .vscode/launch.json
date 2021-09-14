@@ -1,0 +1,12 @@
+{
+	"version": "1.0.0",
+	"configurations": [
+		{
+			"name": "launch local PWA",
+			"type": "pwa-chrome",
+			"request": "launch",
+			"url": "http://localhost",
+			"webRoot": "${workspaceFolder}/public"
+		}
+	]
+}

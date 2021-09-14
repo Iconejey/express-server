@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "run debugger",
+			"command": "${command:workbench.action.debug.start}",
+
+			"runOptions": {
+				"runOn": "folderOpen"
+			}
+		}
+	]
+}
