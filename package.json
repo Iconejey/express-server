@@ -1,6 +1,6 @@
 {
 	"name": "express-server",
-	"version": "21.12.13",
+	"version": "21.12.14",
 	"description": "Node.js express http/https server",
 	"main": "server.js",
 	"scripts": {
