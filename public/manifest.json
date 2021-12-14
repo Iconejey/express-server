@@ -1,4 +1,6 @@
 {
+	"id": "express-server",
+
 	"name": "Express Server",
 	"short_name": "Express Server",
 	"description": "Node.js express http/https server",
