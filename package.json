@@ -1,6 +1,6 @@
 {
 	"name": "express-server",
-	"version": "21.12.14",
+	"version": "21.12.17",
 	"description": "Node.js express http/https server",
 	"main": "server.js",
 	"scripts": {
@@ -36,7 +36,6 @@
 		"express": "^4.17.1",
 		"express-fileupload": "^1.2.1",
 		"express-useragent": "^1.0.15",
-		"helmet": "^4.6.0",
 		"image-data-uri": "^1.0.0",
 		"ip": "^1.1.5",
 		"nodemon": "^2.0.7"

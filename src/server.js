@@ -21,7 +21,7 @@ const manifest = require('../public/manifest.json');
 // Show app header
 {
 	const dev_mode = process.env.NODE_ENV === 'development';
-	const app_url = dev_mode ? `https://${ip.address()}` : manifest.related_applications[0].url;
+	const app_url = dev_mode || !manifest ? `https://${ip.address()}` : manifest.related_applications[0].url;
 	const package_name = package.name.replace(/^./, str => str.toUpperCase());
 
 	// Clear console
@@ -53,15 +53,6 @@ const app = express();
 
 // Basic middlewares
 {
-	const helmet_options = {
-		contentSecurityPolicy: {
-			directives: {
-				defaultSrc: ["'self'", '*.gstatic.com', '*.googleapis.com']
-			}
-		}
-	};
-
-	app.use(helmet(helmet_options));
 	app.use(compression());
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
@@ -75,7 +66,7 @@ const app = express();
 
 		const authorized = authorized_countries.includes(country);
 		const device = req.useragent.isMobile ? 'mobile' : 'desktop';
-		const secure = req.hostname === 'localhost' || req.protocol === 'https';
+		const secure = req.hostname === 'localhost' || req.protocol === 'https' || process.env.HTTPS_PORT === 'NULL';
 		const file = req.url.split('/').slice(-1)[0];
 
 		// Only log navigation requests
@@ -100,18 +91,21 @@ route(app);
 
 // // // // // // // // // // // // // // //
 
-// Options
-const options = {
-	key: fs.readFileSync('./cert/private_key.key'),
-	cert: fs.readFileSync('./cert/ssl_certificate.cer')
-};
-
 // HTTP
-app.listen(process.env.HTTP_PORT, () => {
-	console.log(`${colors.yellow}http${colors.white} server listening...`);
-});
+if (process.env.HTTP_PORT !== 'NULL') {
+	app.listen(process.env.HTTP_PORT, () => {
+		console.log(`${colors.yellow}http${colors.white} server listening...`);
+	});
+}
 
 // HTTPS
-https.createServer(options, app).listen(process.env.HTTPS_PORT, () => {
-	console.log(`${colors.green}https${colors.white} server listening...`);
-});
+if (process.env.HTTPS_PORT !== 'NULL') {
+	const options = {
+		key: fs.readFileSync('./cert/private_key.key'),
+		cert: fs.readFileSync('./cert/ssl_certificate.cer')
+	};
+
+	https.createServer(options, app).listen(process.env.HTTPS_PORT, () => {
+		console.log(`${colors.green}https${colors.white} server listening...`);
+	});
+}
