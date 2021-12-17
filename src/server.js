@@ -2,7 +2,6 @@ const express = require('express');
 const useragent = require('express-useragent');
 const fileUpload = require('express-fileupload');
 const compression = require('compression');
-const helmet = require('helmet');
 const https = require('https');
 
 const fs = require('fs');
