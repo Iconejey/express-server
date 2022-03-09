@@ -1,7 +1,7 @@
 // 22.03.09
 
 const use_cache = true;
-const cache_domains = ['localhost', 'service-worker.nicolasgwy.dev'];
+const cache_domains = ['localhost', 'express-server.nicolasgwy.dev'];
 
 const badge = '/img/badge_icon_x192.png';
 const icon = '/img/round_icon_x512.png';
