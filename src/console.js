@@ -1,6 +1,7 @@
 // Console colors
 const colors = {
 	white: '\033[0m',
+	gray: '\033[90m',
 	red: '\033[31;1m',
 	green: '\033[32m',
 	yellow: '\033[33m',

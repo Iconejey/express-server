@@ -26,10 +26,11 @@ const dev_mode = process.env.NODE_ENV === 'development';
 	console.clear();
 
 	// Show running mode
-	console.log(`\n${dev_mode ? colors.yellow : colors.green}Running in ${dev_mode ? 'development' : 'production'} mode${colors.white}`);
+	if (dev_mode) console.log(`\nRunning in ${colors.yellow}development${colors.white} mode`);
+	else console.log(`\nRunning in ${colors.green}production${colors.white} mode`);
 
 	// Show package name and version
-	console.log(`${package_name} version ${colors.green}${package.version}${colors.white}`);
+	console.log(`${colors.blue}${package_name}${colors.white} version ${colors.yellow}${package.version}${colors.white}`);
 
 	// Show app url
 	console.log(`Available at ${colors.blue}${app_url}${colors.white}\n`);
@@ -91,14 +92,32 @@ route(app);
 // // // // // // // // // // // // // // //
 
 let port = 80;
+let port_color = colors.yellow;
 
 // If in prod, use proxy's config port
 if (!dev_mode) {
-	const config = require('../../proxy/config.json');
-	port = config.find(c => __dirname.includes(c.repo)).port || port;
+	try {
+		const config = require('../../proxy/config.json');
+		console.log(`${colors.gray}Found proxy config${colors.white}`);
+		const new_port = config.find(c => __dirname.includes(c.repo))?.port;
+
+		// Found repo in config
+		if (new_port) {
+			port = new_port;
+			port_color = colors.blue;
+			console.log(`${colors.green}Found dedicated port in proxy config.${colors.white}`);
+		}
+
+		// Not in config
+		else {
+			console.log(`${colors.red}Couldn't find dedicated port in proxy config.${colors.white}`);
+		}
+	} catch (err) {
+		console.log(`${colors.gray}No proxy found.${colors.white}`);
+	}
 }
 
 // HTTP
 app.listen(port, () => {
-	console.log(`${colors.blue}http${colors.white} server listening on port ${colors.yellow}${port}${colors.white}`);
+	console.log(`HTTP server listening on port ${port_color}${port}${colors.white}`);
 });
