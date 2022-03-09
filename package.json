@@ -1,14 +1,15 @@
 {
 	"name": "express-server",
-	"version": "21.12.17",
-	"description": "Node.js express http/https server",
+	"version": "22.03.09",
+	"description": "Node.js express http server made to use with RedBird https proxy",
 	"main": "server.js",
 	"scripts": {
-		"start": "sudo \"$(which node)\" ./src/server.js",
+		"start": "node ./src/server.js",
+		"start:nodemon": "nodemon --ignore private src/server.js",
 		"start:dev": "dev.bat",
 		"start:prod": "pm2 start src/server.js --name \"express-server\" && npm run logs",
-		"start:nodemon": "nodemon --ignore public/data/ src/server.js",
-		"update:prod": "git reset --hard && git pull $GIT_URL && npm i && npm audit fix && pm2 flush && pm2 restart hds-server && clear && npm run logs",
+		"update:prod": "git reset --hard && git pull && npm i && pm2 flush && clear && pm2 restart all --update-env && echo \"Update done\"",
+		"new:component": "node public/scripts/components/component.js",
 		"sass": "sass --no-source-map --watch public/styles/scss:public/styles/css",
 		"logs": "pm2 logs express-server --raw"
 	},
@@ -22,7 +23,9 @@
 		"http",
 		"https",
 		"express",
-		"server"
+		"server",
+		"redbird",
+		"proxy"
 	],
 	"author": "Nicolas Gouwy",
 	"license": "UNLICENCED",

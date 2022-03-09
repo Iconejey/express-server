@@ -1,6 +1,7 @@
-// 21.12.17
+// 22.03.09
 
-const use_cache = false;
+const use_cache = true;
+const cache_domains = ['localhost', 'service-worker.nicolasgwy.dev'];
 
 const badge = '/img/badge_icon_x192.png';
 const icon = '/img/round_icon_x512.png';
@@ -47,9 +48,16 @@ self.addEventListener('fetch', e => e.respondWith(respond(e)));
 
 async function fetchAndCache(req, cache_name) {
 	// Fetch request
-	const fetch_res = await fetch(req);
+	const fetch_res = await fetch(req).catch(e => {
+		console.error(req.url, e);
+		return null;
+	});
 
-	if (use_cache && req.method !== 'POST') {
+	const is_get = req.method === 'GET';
+	const is_api = req.url.includes('/api/');
+	const is_cahing_domain = cache_domains.some(domain => req.url.includes(domain));
+
+	if (use_cache && is_cahing_domain && is_get && !is_api) {
 		// Open cache and save a cloned result
 		const cache = await caches.open(cache_name);
 		cache.put(req, fetch_res.clone());

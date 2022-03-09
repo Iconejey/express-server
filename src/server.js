@@ -2,9 +2,7 @@ const express = require('express');
 const useragent = require('express-useragent');
 const fileUpload = require('express-fileupload');
 const compression = require('compression');
-const https = require('https');
 
-const fs = require('fs');
 const ip = require('ip');
 
 const route = require('./route');
@@ -14,13 +12,14 @@ require('dotenv').config();
 
 const package = require('../package.json');
 const manifest = require('../public/manifest.json');
+const domain = new URL(manifest.related_applications[0].url).hostname;
+const dev_mode = process.env.NODE_ENV === 'development';
 
 // // // // // // // // // // // // // // //
 
 // Show app header
 {
-	const dev_mode = process.env.NODE_ENV === 'development';
-	const app_url = dev_mode || !manifest ? `https://${ip.address()}` : manifest.related_applications[0].url;
+	const app_url = dev_mode || !manifest ? `https://${ip.address()}` : domain;
 	const package_name = package.name.replace(/^./, str => str.toUpperCase());
 
 	// Clear console
@@ -38,9 +37,6 @@ const manifest = require('../public/manifest.json');
 
 // // // // // // // // // // // // // // //
 
-// Reserving connexion only to fr-FR during dev (may block apple devices)
-const authorized_countries = ['fr-FR'];
-
 // Get the language and country of a request (ex: 'fr-FR')
 const getCountry = req => {
 	const acclang = req.headers['accept-language'];
@@ -52,6 +48,7 @@ const app = express();
 
 // Basic middlewares
 {
+	app.enable('trust proxy');
 	app.use(compression());
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: true }));
@@ -63,9 +60,9 @@ const app = express();
 		const ip = req.ip?.replace('::ffff:', '').replace('::1', 'localhost').replace('127.0.0.1', 'localhost');
 		const country = getCountry(req);
 
-		const authorized = authorized_countries.includes(country);
+		const authorized = ['localhost', domain].includes(req.hostname);
 		const device = req.useragent.isMobile ? 'mobile' : 'desktop';
-		const secure = req.hostname === 'localhost' || req.protocol === 'https' || process.env.HTTPS_PORT === 'NULL';
+		const secure = req.secure || req.hostname === 'localhost';
 		const file = req.url.split('/').slice(-1)[0];
 
 		// Only log navigation requests
@@ -81,8 +78,11 @@ const app = express();
 			log(` > ${ip} (${country}, ${device}, ${req.hostname})`, color);
 		}
 
-		if (!secure) res.redirect(`https://${req.hostname}${req.url}`);
-		else if (authorized) next();
+		// Redirect www to non-www
+		if (secure && req.hostname.startsWith('www.')) return res.redirect(`https://${req.hostname.slice(4)}${req.url}`);
+
+		// If the request is authorized, continue
+		if (authorized) next();
 	});
 }
 
@@ -90,21 +90,15 @@ route(app);
 
 // // // // // // // // // // // // // // //
 
+let port = 80;
+
+// If in prod, use proxy's config port
+if (!dev_mode) {
+	const config = require('../../proxy/config.json');
+	port = config.find(c => __dirname.includes(c.repo)).port || port;
+}
+
 // HTTP
-if (process.env.HTTP_PORT !== 'NULL') {
-	app.listen(process.env.HTTP_PORT, () => {
-		console.log(`${colors.yellow}http${colors.white} server listening...`);
-	});
-}
-
-// HTTPS
-if (process.env.HTTPS_PORT !== 'NULL') {
-	const options = {
-		key: fs.readFileSync('./cert/private_key.key'),
-		cert: fs.readFileSync('./cert/ssl_certificate.cer')
-	};
-
-	https.createServer(options, app).listen(process.env.HTTPS_PORT, () => {
-		console.log(`${colors.green}https${colors.white} server listening...`);
-	});
-}
+app.listen(port, () => {
+	console.log(`${colors.blue}http${colors.white} server listening on port ${colors.yellow}${port}${colors.white}`);
+});

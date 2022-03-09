@@ -7,6 +7,6 @@ module.exports = function route(app) {
 
 	// 404
 	app.get('*', (req, res) => {
-		res.sendFile('404.html', { root: __dirname });
+		res.status(404).sendFile('404.html', { root: __dirname });
 	});
 };

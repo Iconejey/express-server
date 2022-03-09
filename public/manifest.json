@@ -3,7 +3,7 @@
 
 	"name": "Express Server",
 	"short_name": "Express Server",
-	"description": "Node.js express http/https server",
+	"description": "Node.js express http server made to use with RedBird https proxy",
 
 	"start_url": "/",
 	"scope": "/",
@@ -47,7 +47,7 @@
 	"related_applications": [
 		{
 			"platform": "web",
-			"url": "https://nicolasgwy.dev"
+			"url": "https://express-server.nicolasgwy.dev"
 		}
 	]
 }
