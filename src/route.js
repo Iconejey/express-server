@@ -6,13 +6,10 @@ const manifest = require('../public/manifest.json');
 
 // Route function called by both http and https servers
 module.exports = function route(app) {
-	// Global
-	app.use('/', express.static('public'));
-
 	// Manifest API
 	app.get('/manifest.json', (req, res) => {
 		// Create a copy of the manifest
-		const manifest_copy = { ...manifest, shortcuts: [] };
+		const manifest_copy = { ...manifest };
 
 		// Specify dev mode if needed
 		if (process.env.NODE_ENV === 'development') {
@@ -23,6 +20,9 @@ module.exports = function route(app) {
 		// Send manifest
 		res.send(manifest_copy);
 	});
+
+	// Global
+	app.use('/', express.static('public'));
 
 	// 404
 	app.get('*', (req, res) => {
