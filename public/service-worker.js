@@ -1,4 +1,4 @@
-// 22.03.09
+// 22.07.3
 
 const use_cache = true;
 const cache_domains = ['localhost', 'express-server.nicolasgwy.dev'];
@@ -7,7 +7,7 @@ const badge = '/img/badge_icon_x192.png';
 const icon = '/img/round_icon_x512.png';
 
 // Install event
-self.addEventListener('install', async e => {
+self.addEventListener('install', e => {
 	console.log('Service worker installed');
 
 	// Show notification
@@ -23,12 +23,11 @@ self.addEventListener('install', async e => {
 });
 
 // Activate event
-self.addEventListener('activate', async e => {
+self.addEventListener('activate', e => {
 	console.log('Service worker activated');
 
-	// Delete main and nav caches
+	// Delete main cache
 	caches.delete('main');
-	caches.delete('nav');
 
 	// Show notification
 	self.registration.showNotification('Update', {
@@ -83,6 +82,17 @@ async function refreshClients() {
 	for (const client of client_list) client.navigate?.('/');
 }
 
+// Focus client
+async function focusClient() {
+	// Get clients list
+	const client_list = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+
+	// If there is at least one client, focus it
+	if (client_list.length) client_list[0].focus();
+	// If there is no client, open a new one
+	else self.clients.openWindow('/');
+}
+
 // Notification click
 self.addEventListener('notificationclick', e => {
 	console.log('Notification clicked');
@@ -95,6 +105,7 @@ self.addEventListener('notificationclick', e => {
 	if (e.action === 'reload') {
 		e.notification.close();
 		refreshClients();
+		focusClient();
 	}
 });
 

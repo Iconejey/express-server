@@ -1,6 +1,6 @@
 {
 	"name": "express-server",
-	"version": "22.03.09",
+	"version": "22.07.03",
 	"description": "Node.js express http server made to use with RedBird https proxy",
 	"main": "server.js",
 	"scripts": {
